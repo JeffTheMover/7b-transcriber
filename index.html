@@ -17,7 +17,6 @@
     --accent-dim: #166534;
     --accent-glow: rgba(34, 197, 94, 0.15);
     --danger: #ef4444;
-    --warning: #f59e0b;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,7 +36,6 @@
     padding: 20px 16px 100px;
   }
 
-  /* Header */
   .header {
     display: flex;
     align-items: center;
@@ -71,7 +69,6 @@
     margin-top: 2px;
   }
 
-  /* API Key Section */
   .api-key-section {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -166,7 +163,6 @@
     line-height: 1.5;
   }
 
-  /* Input Tabs */
   .input-section {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -175,39 +171,6 @@
     margin-bottom: 16px;
   }
 
-  .tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--bg);
-    border-radius: 12px;
-    padding: 4px;
-    margin-bottom: 16px;
-  }
-
-  .tab {
-    flex: 1;
-    padding: 10px 8px;
-    border: none;
-    background: transparent;
-    color: var(--text-dim);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-  }
-
-  .tab.active {
-    background: var(--surface-2);
-    color: var(--text);
-    font-weight: 600;
-  }
-
-  .tab:active { opacity: 0.7; }
-
-  /* Upload Area */
   .upload-area {
     border: 2px dashed var(--border);
     border-radius: 12px;
@@ -278,34 +241,6 @@
     padding: 4px;
   }
 
-  /* YouTube Input */
-  .youtube-input {
-    display: flex;
-    gap: 8px;
-  }
-
-  .youtube-input input {
-    flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .youtube-input input:focus {
-    border-color: var(--accent);
-  }
-
-  .youtube-input input::placeholder {
-    color: var(--text-dim);
-  }
-
-  /* Options */
   .options {
     display: flex;
     gap: 12px;
@@ -365,7 +300,6 @@
     font-weight: 500;
   }
 
-  /* Transcribe Button */
   .btn-transcribe {
     width: 100%;
     padding: 16px;
@@ -392,7 +326,6 @@
     transform: scale(0.98);
   }
 
-  /* Progress */
   .progress-section {
     display: none;
     margin-top: 16px;
@@ -422,7 +355,6 @@
     text-align: center;
   }
 
-  /* Results */
   .results-section {
     display: none;
     margin-top: 20px;
@@ -504,7 +436,6 @@
     font-size: 12px;
   }
 
-  /* Error */
   .error-msg {
     display: none;
     background: rgba(239, 68, 68, 0.1);
@@ -519,7 +450,6 @@
 
   .error-msg.visible { display: block; }
 
-  /* Copy toast */
   .toast {
     position: fixed;
     bottom: 30px;
@@ -540,18 +470,12 @@
     transform: translateX(-50%) translateY(0);
   }
 
-  /* Hidden file input */
   #fileInput { display: none; }
-
-  /* Tab content */
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
 </style>
 </head>
 <body>
 
 <div class="app">
-  <!-- Header -->
   <div class="header">
     <div class="logo">7B</div>
     <div class="header-text">
@@ -560,7 +484,6 @@
     </div>
   </div>
 
-  <!-- API Key -->
   <div class="api-key-section" id="apiKeySection">
     <div class="api-key-header">
       <label>Deepgram API Key</label>
@@ -573,43 +496,23 @@
     <p class="api-key-note">Your key is stored only on this device and never sent anywhere except Deepgram. <a href="#" id="btnClearKey" style="color: var(--text-dim); text-decoration: underline; display: none;">Clear saved key</a></p>
   </div>
 
-  <!-- Input Section -->
   <div class="input-section">
-    <div class="tabs">
-      <button class="tab active" data-tab="upload">Audio/Video</button>
-      <button class="tab" data-tab="youtube">YouTube</button>
+    <div class="upload-area" id="uploadArea">
+      <div class="upload-icon">🎙️</div>
+      <h3>Tap to select a file</h3>
+      <p>MP3, M4A, WAV, MP4, MOV, WebM, OGG</p>
     </div>
-
-    <!-- Upload Tab -->
-    <div class="tab-content active" id="tab-upload">
-      <div class="upload-area" id="uploadArea">
-        <div class="upload-icon">🎙️</div>
-        <h3>Tap to select a file</h3>
-        <p>MP3, M4A, WAV, MP4, MOV, WebM, OGG</p>
+    <input type="file" id="fileInput" accept="audio/*,video/*,.mp3,.m4a,.wav,.ogg,.mp4,.mov,.webm,.flac,.aac,.wma">
+    <div class="file-selected" id="fileSelected" style="display: none;">
+      <span class="file-icon">📄</span>
+      <div class="file-info">
+        <div class="file-name" id="fileName"></div>
+        <div class="file-size" id="fileSize"></div>
       </div>
-      <input type="file" id="fileInput" accept="audio/*,video/*,.mp3,.m4a,.wav,.ogg,.mp4,.mov,.webm,.flac,.aac,.wma">
-      <div class="file-selected" id="fileSelected" style="display: none;">
-        <span class="file-icon">📄</span>
-        <div class="file-info">
-          <div class="file-name" id="fileName"></div>
-          <div class="file-size" id="fileSize"></div>
-        </div>
-        <button class="file-remove" id="fileRemove">✕</button>
-      </div>
-    </div>
-
-    <!-- YouTube Tab -->
-    <div class="tab-content" id="tab-youtube">
-      <div class="youtube-input">
-        <input type="text" id="youtubeUrl" placeholder="Paste YouTube URL here">
-      </div>
-      <p style="font-size: 12px; color: var(--text-dim); margin-top: 10px; line-height: 1.5;">
-        Pulls the existing transcript from YouTube. If no captions exist, you'll need to download the audio and upload it instead.
-      </p>
+      <button class="file-remove" id="fileRemove">✕</button>
     </div>
   </div>
 
-  <!-- Options -->
   <div class="options">
     <div class="option-toggle active" id="toggleSpeakers" data-option="speakers">
       <div class="toggle-track"><div class="toggle-knob"></div></div>
@@ -621,10 +524,8 @@
     </div>
   </div>
 
-  <!-- Transcribe Button -->
   <button class="btn-transcribe" id="btnTranscribe" disabled>Transcribe</button>
 
-  <!-- Progress -->
   <div class="progress-section" id="progressSection">
     <div class="progress-bar-container">
       <div class="progress-bar" id="progressBar"></div>
@@ -632,10 +533,8 @@
     <div class="progress-status" id="progressStatus">Uploading...</div>
   </div>
 
-  <!-- Error -->
   <div class="error-msg" id="errorMsg"></div>
 
-  <!-- Results -->
   <div class="results-section" id="resultsSection">
     <div class="results-header">
       <h2>Transcript</h2>
@@ -649,19 +548,15 @@
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast">Copied to clipboard</div>
 
 <script>
-// State
 let apiKey = '';
 let selectedFile = null;
-let currentTab = 'upload';
 let options = { speakers: true, timestamps: true };
 let transcriptText = '';
 let transcriptFilename = '';
 
-// Elements
 const apiKeySection = document.getElementById('apiKeySection');
 const apiKeyInput = document.getElementById('apiKeyInput');
 const btnSaveKey = document.getElementById('btnSaveKey');
@@ -672,7 +567,6 @@ const fileSelected = document.getElementById('fileSelected');
 const fileName = document.getElementById('fileName');
 const fileSize = document.getElementById('fileSize');
 const fileRemove = document.getElementById('fileRemove');
-const youtubeUrl = document.getElementById('youtubeUrl');
 const btnTranscribe = document.getElementById('btnTranscribe');
 const progressSection = document.getElementById('progressSection');
 const progressBar = document.getElementById('progressBar');
@@ -685,8 +579,6 @@ const btnCopy = document.getElementById('btnCopy');
 const btnDownload = document.getElementById('btnDownload');
 const toast = document.getElementById('toast');
 
-// --- API Key ---
-// Check for saved key on load
 (function loadSavedKey() {
   try {
     const saved = localStorage.getItem('dg_key');
@@ -738,20 +630,6 @@ document.getElementById('btnClearKey').addEventListener('click', (e) => {
   updateTranscribeBtn();
 });
 
-// --- Tabs ---
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-    tab.classList.add('active');
-    const target = tab.dataset.tab;
-    document.getElementById('tab-' + target).classList.add('active');
-    currentTab = target;
-    updateTranscribeBtn();
-  });
-});
-
-// --- File Upload ---
 uploadArea.addEventListener('click', () => fileInput.click());
 
 uploadArea.addEventListener('dragover', (e) => {
@@ -797,7 +675,6 @@ function formatFileSize(bytes) {
   return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
 }
 
-// --- Toggles ---
 document.querySelectorAll('.option-toggle').forEach(toggle => {
   toggle.addEventListener('click', () => {
     const opt = toggle.dataset.option;
@@ -806,28 +683,11 @@ document.querySelectorAll('.option-toggle').forEach(toggle => {
   });
 });
 
-// --- YouTube URL monitoring ---
-youtubeUrl.addEventListener('input', updateTranscribeBtn);
-
-// --- Transcribe Button State ---
 function updateTranscribeBtn() {
-  let ready = false;
-  if (!apiKey) { ready = false; }
-  else if (currentTab === 'upload' && selectedFile) { ready = true; }
-  else if (currentTab === 'youtube' && youtubeUrl.value.trim()) { ready = true; }
-  btnTranscribe.disabled = !ready;
+  btnTranscribe.disabled = !(apiKey && selectedFile);
 }
 
-// --- Transcribe ---
 btnTranscribe.addEventListener('click', async () => {
-  if (currentTab === 'youtube') {
-    await transcribeYouTube();
-  } else {
-    await transcribeFile();
-  }
-});
-
-async function transcribeFile() {
   if (!selectedFile || !apiKey) return;
 
   showProgress('Uploading audio to Deepgram...');
@@ -870,7 +730,7 @@ async function transcribeFile() {
 
     const formatted = formatTranscript(data, options.speakers, options.timestamps);
     transcriptText = formatted.plain;
-    
+
     showResults(formatted.html, formatted.meta);
     setProgress(100, 'Done!');
     setTimeout(() => hideProgress(), 500);
@@ -879,105 +739,14 @@ async function transcribeFile() {
     hideProgress();
     showError(err.message);
   }
-}
+});
 
-async function transcribeYouTube() {
-  const url = youtubeUrl.value.trim();
-  if (!url || !apiKey) return;
-
-  showProgress('Fetching YouTube transcript...');
-  hideError();
-  hideResults();
-
-  try {
-    // Extract video ID
-    const videoId = extractVideoId(url);
-    if (!videoId) throw new Error('Could not parse that YouTube URL. Please check and try again.');
-
-    setProgress(30, 'Fetching captions...');
-
-    // Use a public transcript API
-    const transcriptRes = await fetch(`https://yt.vl.comp.nus.edu.sg/api/transcript?v=${videoId}`);
-    
-    if (!transcriptRes.ok) {
-      // Try alternative API
-      const alt = await fetch(`https://youtubetranscript.com/?server_vid2=${videoId}`);
-      if (!alt.ok) {
-        throw new Error('Could not fetch transcript for this video. It may not have captions available. Try downloading the audio and uploading it instead.');
-      }
-      const altText = await alt.text();
-      transcriptText = parseAltTranscript(altText);
-    } else {
-      const transcriptData = await transcriptRes.json();
-      transcriptText = formatYouTubeTranscript(transcriptData, options.timestamps);
-    }
-
-    setProgress(80, 'Formatting...');
-
-    transcriptFilename = `youtube_${videoId}_transcript.txt`;
-    
-    const html = transcriptText.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const wordCount = transcriptText.split(/\s+/).length;
-    showResults(html, `${wordCount.toLocaleString()} words`);
-    
-    setProgress(100, 'Done!');
-    setTimeout(() => hideProgress(), 500);
-
-  } catch (err) {
-    hideProgress();
-    // Fallback message
-    if (err.message.includes('Could not fetch')) {
-      showError(err.message);
-    } else {
-      showError('Could not fetch that transcript. YouTube may not have captions for this video, or the URL may be incorrect. You can download the audio and upload it as a file instead.');
-    }
-  }
-}
-
-function extractVideoId(url) {
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/)([a-zA-Z0-9_-]{11})/,
-    /^([a-zA-Z0-9_-]{11})$/,
-  ];
-  for (const p of patterns) {
-    const m = url.match(p);
-    if (m) return m[1];
-  }
-  return null;
-}
-
-function formatYouTubeTranscript(data, showTimestamps) {
-  if (Array.isArray(data)) {
-    return data.map(item => {
-      const time = showTimestamps && item.start != null
-        ? `[${formatTime(item.start)}] `
-        : '';
-      return time + (item.text || '');
-    }).join('\n');
-  }
-  if (typeof data === 'string') return data;
-  return JSON.stringify(data);
-}
-
-function parseAltTranscript(html) {
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  const texts = div.querySelectorAll('text');
-  if (texts.length) {
-    return Array.from(texts).map(t => t.textContent).join(' ');
-  }
-  return div.textContent || html;
-}
-
-// --- Format Deepgram Transcript ---
 function formatTranscript(data, showSpeakers, showTimestamps) {
   const results = data.results;
   let plainLines = [];
   let htmlLines = [];
   let totalDuration = 0;
   let wordCount = 0;
-
-  // First, collect all utterances into a flat list
   let utterances = [];
 
   if (results.utterances && results.utterances.length > 0) {
@@ -988,7 +757,6 @@ function formatTranscript(data, showSpeakers, showTimestamps) {
       end: utt.end,
     }));
   } else {
-    // Fallback to channels/alternatives
     const channels = results.channels || [];
     channels.forEach(ch => {
       const alts = ch.alternatives || [];
@@ -1017,16 +785,13 @@ function formatTranscript(data, showSpeakers, showTimestamps) {
     });
   }
 
-  // Group consecutive utterances by the same speaker
   let groups = [];
   utterances.forEach(utt => {
     const lastGroup = groups[groups.length - 1];
     if (lastGroup && lastGroup.speaker === utt.speaker) {
-      // Same speaker, append text
       lastGroup.text += ' ' + utt.text;
       lastGroup.end = utt.end || lastGroup.end;
     } else {
-      // New speaker or first utterance
       groups.push({
         speaker: utt.speaker,
         text: utt.text,
@@ -1036,7 +801,6 @@ function formatTranscript(data, showSpeakers, showTimestamps) {
     }
   });
 
-  // Format each group
   groups.forEach(group => {
     let line = '';
     let htmlLine = '';
@@ -1088,7 +852,6 @@ function escapeHtml(text) {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// --- UI Helpers ---
 function showProgress(msg) {
   progressSection.classList.add('visible');
   progressBar.style.width = '10%';
@@ -1129,13 +892,11 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('visible'), 2000);
 }
 
-// --- Copy ---
 btnCopy.addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(transcriptText);
     showToast('Copied to clipboard');
   } catch (e) {
-    // Fallback
     const ta = document.createElement('textarea');
     ta.value = transcriptText;
     document.body.appendChild(ta);
@@ -1146,7 +907,6 @@ btnCopy.addEventListener('click', async () => {
   }
 });
 
-// --- Download ---
 btnDownload.addEventListener('click', () => {
   const blob = new Blob([transcriptText], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
