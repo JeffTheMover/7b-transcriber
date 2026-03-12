@@ -977,33 +977,16 @@ function formatTranscript(data, showSpeakers, showTimestamps) {
   let totalDuration = 0;
   let wordCount = 0;
 
-  // If utterances available and speakers requested
+  // First, collect all utterances into a flat list
+  let utterances = [];
+
   if (results.utterances && results.utterances.length > 0) {
-    results.utterances.forEach(utt => {
-      let line = '';
-      let htmlLine = '';
-      
-      if (showTimestamps) {
-        const ts = formatTime(utt.start);
-        line += `[${ts}] `;
-        htmlLine += `<span class="timestamp">[${ts}]</span> `;
-      }
-
-      if (showSpeakers && utt.speaker !== undefined) {
-        const label = `Speaker ${utt.speaker}`;
-        line += `${label}: `;
-        htmlLine += `<span class="speaker">${label}:</span> `;
-      }
-
-      line += utt.transcript;
-      htmlLine += escapeHtml(utt.transcript);
-
-      plainLines.push(line);
-      htmlLines.push(htmlLine);
-
-      if (utt.end > totalDuration) totalDuration = utt.end;
-      wordCount += utt.transcript.split(/\s+/).length;
-    });
+    utterances = results.utterances.map(utt => ({
+      speaker: utt.speaker,
+      text: utt.transcript,
+      start: utt.start,
+      end: utt.end,
+    }));
   } else {
     // Fallback to channels/alternatives
     const channels = results.channels || [];
@@ -1014,43 +997,71 @@ function formatTranscript(data, showSpeakers, showTimestamps) {
         if (alt.paragraphs && alt.paragraphs.paragraphs) {
           alt.paragraphs.paragraphs.forEach(para => {
             para.sentences.forEach(sent => {
-              let line = '';
-              let htmlLine = '';
-
-              if (showTimestamps) {
-                const ts = formatTime(sent.start);
-                line += `[${ts}] `;
-                htmlLine += `<span class="timestamp">[${ts}]</span> `;
-              }
-
-              if (showSpeakers && para.speaker !== undefined) {
-                const label = `Speaker ${para.speaker}`;
-                line += `${label}: `;
-                htmlLine += `<span class="speaker">${label}:</span> `;
-              }
-
-              line += sent.text;
-              htmlLine += escapeHtml(sent.text);
-
-              plainLines.push(line);
-              htmlLines.push(htmlLine);
+              utterances.push({
+                speaker: para.speaker,
+                text: sent.text,
+                start: sent.start,
+                end: sent.end || sent.start,
+              });
             });
           });
         } else {
-          const text = alt.transcript || '';
-          plainLines.push(text);
-          htmlLines.push(escapeHtml(text));
-          wordCount += text.split(/\s+/).length;
-        }
-
-        if (alt.words && alt.words.length) {
-          const lastWord = alt.words[alt.words.length - 1];
-          if (lastWord.end > totalDuration) totalDuration = lastWord.end;
-          wordCount = alt.words.length;
+          utterances.push({
+            speaker: undefined,
+            text: alt.transcript || '',
+            start: 0,
+            end: alt.words && alt.words.length ? alt.words[alt.words.length - 1].end : 0,
+          });
         }
       }
     });
   }
+
+  // Group consecutive utterances by the same speaker
+  let groups = [];
+  utterances.forEach(utt => {
+    const lastGroup = groups[groups.length - 1];
+    if (lastGroup && lastGroup.speaker === utt.speaker) {
+      // Same speaker, append text
+      lastGroup.text += ' ' + utt.text;
+      lastGroup.end = utt.end || lastGroup.end;
+    } else {
+      // New speaker or first utterance
+      groups.push({
+        speaker: utt.speaker,
+        text: utt.text,
+        start: utt.start,
+        end: utt.end,
+      });
+    }
+  });
+
+  // Format each group
+  groups.forEach(group => {
+    let line = '';
+    let htmlLine = '';
+
+    if (showTimestamps) {
+      const ts = formatTime(group.start);
+      line += `[${ts}] `;
+      htmlLine += `<span class="timestamp">[${ts}]</span> `;
+    }
+
+    if (showSpeakers && group.speaker !== undefined) {
+      const label = `Speaker ${group.speaker}`;
+      line += `${label}: `;
+      htmlLine += `<span class="speaker">${label}:</span> `;
+    }
+
+    line += group.text;
+    htmlLine += escapeHtml(group.text);
+
+    plainLines.push(line);
+    htmlLines.push(htmlLine);
+
+    if (group.end > totalDuration) totalDuration = group.end;
+    wordCount += group.text.split(/\s+/).length;
+  });
 
   const durationStr = totalDuration > 0 ? formatTime(totalDuration) : '';
   const meta = [
@@ -1059,8 +1070,8 @@ function formatTranscript(data, showSpeakers, showTimestamps) {
   ].filter(Boolean).join('  ·  ');
 
   return {
-    plain: plainLines.join('\n'),
-    html: htmlLines.join('\n'),
+    plain: plainLines.join('\n\n'),
+    html: htmlLines.join('\n\n'),
     meta,
   };
 }
